@@ -23,6 +23,8 @@ async function fetchTxs() {
   let txs = []
   let conn = await utils.getConn();
   let ch = await conn.createChannel();
+
+
   let res = await ch.assertQueue(q);
 
   // if queue doest contain enough transactions wait for more 
