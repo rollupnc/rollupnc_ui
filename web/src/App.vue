@@ -1,21 +1,13 @@
 <template>
   <div id="app">
-    <img alt="rollup logo" src="./assets/logo.png" height = "300px">
-    <SubmitTx msg="Rollup Non-custodial"/>
+    <img src="./assets/logo.png" height = "300px">
+    <router-view/>
   </div>
 </template>
 
 <script>
-import SubmitTx from './components/SubmitTx.vue'
-
 export default {
-  name: 'app',
-  components: {
-    SubmitTx
-  },
-  created () {
-    document.title = "rollupNC";
-  }
+  name: 'App'
 }
 </script>
 
@@ -28,7 +20,6 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
-
 button {
     font-family : inherit;
     font-size: 1em;
