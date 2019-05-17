@@ -1,7 +1,8 @@
 <template>
     <div>
         <Withdraw/><br/><br/>
-        <Metamask/>
+        <Metamask/><br>
+        <EdDSA/>
     </div>
 
 </template>
@@ -9,6 +10,7 @@
 <script>
     import Metamask from '@/components/Metamask'
     import Withdraw from '@/components/Withdraw'
+    import EdDSA from '@/components/EdDSA'
     export default {
         name: 'RollupNC',
         beforeCreate () {
@@ -17,7 +19,8 @@
         },
         components: {
             'Withdraw': Withdraw,
-            'Metamask': Metamask
+            'Metamask': Metamask,
+            'EdDSA': EdDSA
         }
     }
 </script>
