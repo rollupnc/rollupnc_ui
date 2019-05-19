@@ -34,8 +34,9 @@ export const store = new Vuex.Store({
         },
 
         registerContractInstance (state, payload) {
-            console.log('RollupNC contract instance: ', payload)
-            state.contractInstance = payload
+            // console.log('RollupNC contract instance: ', payload)
+            state.contractInstance = () => payload
+            // state.contractInstance = payload
         }
            
     },
@@ -56,12 +57,10 @@ export const store = new Vuex.Store({
         },
 
         getContractInstance ({commit}) {
-            // console.log('getContractInstance being executed')
-            var result = web3.eth.contract(ABI, address)
-            commit('registerContractInstance', result)
-            // getContract.then(result => {
-            //     commit('registerContractInstance', result)
-            // }).catch(e => console.log(e))
+            console.log('getContractInstance being executed')
+            getContract.then(result => {
+                commit('registerContractInstance', result)
+            }).catch(e => console.log(e))
         }
     }
 })

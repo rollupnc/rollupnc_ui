@@ -80,32 +80,33 @@
         },
 
         methods: {
-            clickWithdraw () {
+            clickWithdraw ()  {
                 this.withdrawEvent = null
                 this.pending = true
-
-                this.$store.state.contractInstance.withdraw(
+                
+                this.$store.state.contractInstance().methods.withdraw(
                     this.pubkey_from, this.amount, this.token_type_from, 
                     this.proof, this.position, this.txRoot, this.recipient,
-                    this.a, this.b, this.c,
+                    this.a, this.b, this.c).send(
                     {
-                        gas: 300000,
+                        // gas: 300000,
                         from: this.$store.state.web3.coinbase
                     }, 
-                    (err, result) => {
+                    async (err, result) => {
                         if (err) {
                             console.log(err)
-                            this.pending = false
                         } else {
-                            let Withdraw = this.$store.state.contractInstance().Withdraw()
-                            Withdraw.watch((err, result) => {
-                                if (err) {
-                                    console.log('could not get event Withdraw()')
-                                } else {
-                                    this.withdrawEvent = result.args
-                                    this.pending = false
-                                }
+                            console.log('tx', result)
+                            this.pending = false
+                            this.$store.state.contractInstance().events.Withdraw(
+                                {fromBlock: 0}, (error, event) => {}
+                            )
+                            .on('data', (event) => {
+                                console.log(event.args)
+                                this.withdrawEvent = event.args
+                                this.pending = false
                             })
+                            .on('error', console.error)
                         }
                     })
             }
