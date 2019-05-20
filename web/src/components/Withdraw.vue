@@ -1,12 +1,15 @@
 <template>
  <div class='withdraw'>
     <h1 v-on:click = "clickWithdraw">Withdraw</h1>
-    <img v-if="pending" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif">
-    <div class="event" v-if="withdrawEvent">
-        Withdrawn from: {{ withdrawEvent.from }}
-        Withdrawn to: {{ withdrawEvent.recipient }}
-        Amount: {{ withdrawEvent.amount }} 
-        Token type: {{ withdrawEvent.token_type }}
+    <img v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif">
+    <div class="tx" v-if="withdrawTx" align = "left">
+        <strong>Tx hash:</strong> <a :href ="'https://ropsten.etherscan.io/tx/' + withdrawTx" target="_blank">{{ withdrawTx }}</a>
+    </div>
+    <div class="event" v-if="withdrawEvent" align="left">
+        <strong>From (EdDSA):</strong> {{ withdrawEvent.from[0] }}, {{ withdrawEvent.from[1] }} <br/><br/>
+        <strong>To (Ethereum):</strong> {{ withdrawEvent.recipient }} <br/>
+        <strong>Amount:</strong> {{ withdrawEvent.amount }} <br/>
+        <strong>Token type:</strong> {{ withdrawEvent.token_type }}
     </div>
  </div>
 </template>
@@ -42,13 +45,15 @@
     export default {
         name: 'Withdraw',
         mounted () {
-            console.log('dispatching getContractInstance')
+            // console.log('dispatching getContractInstance')
             this.$store.dispatch('getContractInstance')
         },
         data () {
             return {
-                pending: false,
+                pendingTx: false,
+                pendingEvent: false,
                 withdrawEvent: null,
+                withdrawTx: null,
                 pubkey_from: [
                     "5188413625993601883297433934250988745151922355819390722918528461123462745458",
                     "12688531930957923993246507021135702202363596171614725698211865710242486568828"
@@ -81,9 +86,11 @@
 
         methods: {
             clickWithdraw ()  {
+                this.withdrawTx = null
                 this.withdrawEvent = null
-                this.pending = true
-                
+                this.pendingEvent = true
+                this.pendingTx = true
+
                 this.$store.state.contractInstance().methods.withdraw(
                     this.pubkey_from, this.amount, this.token_type_from, 
                     this.proof, this.position, this.txRoot, this.recipient,
@@ -92,19 +99,19 @@
                         // gas: 300000,
                         from: this.$store.state.web3.coinbase
                     }, 
-                    async (err, result) => {
+                    (err, result) => {
                         if (err) {
                             console.log(err)
                         } else {
-                            console.log('tx', result)
-                            this.pending = false
-                            this.$store.state.contractInstance().events.Withdraw(
-                                {fromBlock: 0}, (error, event) => {}
+                            this.pendingTx = false
+                            this.withdrawTx = result
+                            this.$store.state.contractInstance().events.Withdraw( 
+                                {fromBlock: 'latest', toBlock: 'pending'}, (error, event) => {}
                             )
                             .on('data', (event) => {
-                                console.log(event.args)
-                                this.withdrawEvent = event.args
-                                this.pending = false
+                                this.withdrawEvent = event['returnValues']
+                                console.log(this.withdrawEvent)
+                                this.pendingEvent = true
                             })
                             .on('error', console.error)
                         }

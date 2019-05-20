@@ -44,7 +44,7 @@ export const store = new Vuex.Store({
         registerWeb3 ({commit}) {
             // console.log('registerWeb3 Action being executed')
             getWeb3.then(result => {
-            //   console.log('committing result to registerWeb3Instance mutation')
+            //   console.log('committing result to registerWeb3Instance mutation', result)
               commit('registerWeb3Instance', result)
             }).catch(e => {
               console.log('error in action registerWeb3', e)
@@ -57,7 +57,7 @@ export const store = new Vuex.Store({
         },
 
         getContractInstance ({commit}) {
-            console.log('getContractInstance being executed')
+            // console.log('getContractInstance being executed')
             getContract.then(result => {
                 commit('registerContractInstance', result)
             }).catch(e => console.log(e))
