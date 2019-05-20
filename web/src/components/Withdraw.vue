@@ -1,6 +1,6 @@
 <template>
  <div class='withdraw-info'>
-     <h1 align="center">Withdraw</h1>
+     <h1 align="center"><strong>Withdraw</strong></h1><br/>
      <b-container fluid>
         <b-row class="my-1">
             <b-col sm="2">
@@ -8,8 +8,6 @@
             <label for="input-small">from_y:</label><br/>
             <label for="input-small">amount:</label><br/>
             <label for="input-small">token:</label><br/>
-            <label for="input-small">proof:</label><br/>
-            <label for="input-small">path:</label><br/>
             <label for="input-small">txRoot:</label><br/>
 
             </b-col>
@@ -18,18 +16,18 @@
             <b-form-input id="input-small" v-model="from_y" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="amount" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="token_type_from" size="sm"></b-form-input>
-            <b-form-input id="input-small" v-model="proof" size="sm"></b-form-input>
-            <b-form-input id="input-small" v-model="position" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="txRoot" size="sm"></b-form-input>
 
             </b-col>
         </b-row>
     </b-container>
     <br/>
-     <div class="withdraw">
-        <h4 v-on:click = "clickWithdraw">Sign and submit</h4>
+    <div class="withdraw-button">
+        <h5 v-on:click = "getProof"><strong>1. Get Merkle proof</strong></h5>
      </div>
-     <br/>
+     <div class="withdraw-button">
+        <h5 v-on:click = "clickWithdraw"><strong>2. Sign and submit</strong></h5>
+     </div>
     <img class="center" v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif"><br/><br/>
     <div class="tx" v-if="withdrawTx" align = "left">
         <strong>Tx hash:</strong> <a :href ="'https://ropsten.etherscan.io/tx/' + withdrawTx" target="_blank" style="color:#4682b4">{{ withdrawTx }}</a>
@@ -67,26 +65,24 @@
         -o-text-overflow: ellipsis;    /* Opera < 11*/
         text-overflow:    ellipsis; 
     }
-    .withdraw {
-        /* margin-top: 20px; */
-        padding: 5px;
+    .withdraw-button {
+        padding: 10px;
         /* display: inline-block; */
         text-align:center;
         border: 1px solid black;
         height: 50px;
         width: 300px;
-        margin: 0 auto;
+        margin: 20px auto;
         background-color:#F5DEB3;
     }
-    .withdraw:hover{
+    .withdraw-button:hover{
         background-color:#FFEBCD;
         color:#444444;
         box-shadow:0px 0px #FFEBCD;
     }
-    .withdraw:active{
+    .withdraw-button:active{
         opacity: 0.7;
     }
-
     #loader {
         width:150px;
     }
@@ -169,6 +165,10 @@
                             .on('error', console.error)
                         }
                     })
+            },
+
+            getProof () {
+
             }
         }
     }

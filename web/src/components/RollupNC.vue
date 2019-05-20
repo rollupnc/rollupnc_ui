@@ -2,6 +2,8 @@
     <div>
         <Metamask/><br/>
         <EdDSA/><br/>
+        <Deposit/><br/>
+        <Transfer/><br/>
         <Withdraw/><br/><br/>
     </div>
 
@@ -9,6 +11,8 @@
 
 <script>
     import Metamask from '@/components/Metamask'
+    import Deposit from '@/components/Deposit'
+    import Transfer from '@/components/Transfer'
     import Withdraw from '@/components/Withdraw'
     import EdDSA from '@/components/EdDSA'
     export default {
@@ -18,9 +22,11 @@
             this.$store.dispatch('registerWeb3')
         },
         components: {
-            'Withdraw': Withdraw,
             'Metamask': Metamask,
-            'EdDSA': EdDSA
+            'EdDSA': EdDSA,
+            'Deposit': Deposit,
+            'Transfer': Transfer,
+            'Withdraw': Withdraw
         }
     }
 </script>
