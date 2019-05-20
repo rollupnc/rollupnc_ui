@@ -31,7 +31,8 @@ export default {
 </script>
 <style scoped>
 .metamask-info {
-  padding-left: 42%; 
-  margin-left: -300px;
+  width: 100%;
+  padding-left: 15%; 
+  /* margin-left: -300px; */
 }
 </style>

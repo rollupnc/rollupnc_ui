@@ -1,8 +1,8 @@
 <template>
     <div>
+        <Metamask/><br/>
+        <EdDSA/><br/>
         <Withdraw/><br/><br/>
-        <Metamask/><br>
-        <EdDSA/>
     </div>
 
 </template>

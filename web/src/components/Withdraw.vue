@@ -1,27 +1,82 @@
 <template>
- <div class='withdraw'>
-    <h1 v-on:click = "clickWithdraw">Withdraw</h1>
-    <img v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif">
+ <div class='withdraw-info'>
+     <h1 align="center">Withdraw</h1>
+     <b-container fluid>
+        <b-row class="my-1">
+            <b-col sm="2">
+            <label for="input-small">from_x:</label><br/>
+            <label for="input-small">from_y:</label><br/>
+            <label for="input-small">amount:</label><br/>
+            <label for="input-small">token:</label><br/>
+            <label for="input-small">proof:</label><br/>
+            <label for="input-small">path:</label><br/>
+            <label for="input-small">txRoot:</label><br/>
+
+            </b-col>
+            <b-col sm="10">
+            <b-form-input id="input-small" v-model="from_x" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="from_y" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="amount" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="token_type_from" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="proof" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="position" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="txRoot" size="sm"></b-form-input>
+
+            </b-col>
+        </b-row>
+    </b-container>
+    <br/>
+     <div class="withdraw">
+        <h4 v-on:click = "clickWithdraw">Sign and submit</h4>
+     </div>
+     <br/>
+    <img class="center" v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif"><br/><br/>
     <div class="tx" v-if="withdrawTx" align = "left">
-        <strong>Tx hash:</strong> <a :href ="'https://ropsten.etherscan.io/tx/' + withdrawTx" target="_blank">{{ withdrawTx }}</a>
+        <strong>Tx hash:</strong> <a :href ="'https://ropsten.etherscan.io/tx/' + withdrawTx" target="_blank" style="color:#4682b4">{{ withdrawTx }}</a>
     </div>
-    <div class="event" v-if="withdrawEvent" align="left">
-        <strong>From (EdDSA):</strong> {{ withdrawEvent.from[0] }}, {{ withdrawEvent.from[1] }} <br/><br/>
+    <div v-if="withdrawEvent" align="left">
+        <strong>From (EdDSA):</strong> {{ withdrawEvent.from[0] }}, {{ withdrawEvent.from[1] }} <br/>
         <strong>To (Ethereum):</strong> {{ withdrawEvent.recipient }} <br/>
         <strong>Amount:</strong> {{ withdrawEvent.amount }} <br/>
         <strong>Token type:</strong> {{ withdrawEvent.token_type }}
     </div>
+
  </div>
 </template>
 
 <style scoped>
-    .withdraw {
+    .center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    }
+    .withdraw-info {
         margin-top: 20px;
+        margin-left: 15%;
         padding: 20px;
-        display: inline-block;
+        /* display: inline-block; */
+        text-align:left;
+        border: 1px solid black;
+        background-color:#FFFAFA; 
+        width: 70%;
+        /* padding-left: 10%;  */
+        white-space: wrap;
+        /* width: 100%;                   IE6 needs any width */
+        overflow: hidden;              /* "overflow" value must be different from  visible"*/ 
+        -o-text-overflow: ellipsis;    /* Opera < 11*/
+        text-overflow:    ellipsis; 
+    }
+    .withdraw {
+        /* margin-top: 20px; */
+        padding: 5px;
+        /* display: inline-block; */
         text-align:center;
         border: 1px solid black;
-        background-color:#FFF5EE;
+        height: 50px;
+        width: 300px;
+        margin: 0 auto;
+        background-color:#F5DEB3;
     }
     .withdraw:hover{
         background-color:#FFEBCD;
@@ -54,10 +109,8 @@
                 pendingEvent: false,
                 withdrawEvent: null,
                 withdrawTx: null,
-                pubkey_from: [
-                    "5188413625993601883297433934250988745151922355819390722918528461123462745458",
-                    "12688531930957923993246507021135702202363596171614725698211865710242486568828"
-                ],
+                from_x: "5188413625993601883297433934250988745151922355819390722918528461123462745458",
+                from_y: "12688531930957923993246507021135702202363596171614725698211865710242486568828",
                 amount: 500,
                 token_type_from: 10,
                 proof: [
@@ -92,7 +145,7 @@
                 this.pendingTx = true
 
                 this.$store.state.contractInstance().methods.withdraw(
-                    this.pubkey_from, this.amount, this.token_type_from, 
+                    [this.from_x, this.from_y], this.amount, this.token_type_from, 
                     this.proof, this.position, this.txRoot, this.recipient,
                     this.a, this.b, this.c).send(
                     {
@@ -106,7 +159,7 @@
                             this.pendingTx = false
                             this.withdrawTx = result
                             this.$store.state.contractInstance().events.Withdraw( 
-                                {fromBlock: 'latest', toBlock: 'pending'}, (error, event) => {}
+                                {fromBlock: 0, toBlock: 'latest'}, (error, event) => {}
                             )
                             .on('data', (event) => {
                                 this.withdrawEvent = event['returnValues']

@@ -12,8 +12,14 @@
 
 <style scoped>
 .eddsa-info {
-  padding-left: 42%; 
-  margin-left: -300px;
+  width: 100%;
+  padding-left: 15%; 
+  /* margin-left: -300px; */
+  white-space: wrap;
+  /* width: 100%;                   IE6 needs any width */
+  /* overflow: hidden;              /* "overflow" value must be different from  visible"*/ 
+  /* -o-text-overflow: ellipsis;    Opera < 11 */
+  /* text-overflow:    ellipsis;   */
 }
 </style>
 
