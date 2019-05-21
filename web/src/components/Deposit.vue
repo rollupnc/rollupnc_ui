@@ -1,29 +1,26 @@
 <template>
- <div class='deposit-info'>
-     <h1 align="center"><strong>Deposit</strong></h1><br/>
-     <b-container fluid>
+ <div class='deposit-info' v-on:click="toggleHidden">
+     <h1 align="center"><strong>Deposit</strong></h1>
+     <b-container fluid v-if="!isHidden">
         <b-row class="my-1">
             <b-col sm="2">
             <label for="input-small">from_x:</label><br/>
             <label for="input-small">from_y:</label><br/>
             <label for="input-small">amount:</label><br/>
             <label for="input-small">token:</label><br/>
-
             </b-col>
             <b-col sm="10">
             <b-form-input id="input-small" v-model="from_x" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="from_y" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="amount" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="token_type_from" size="sm"></b-form-input>
-
             </b-col>
         </b-row>
     </b-container>
-    <br/>
-     <div class="deposit-button">
+     <div class="deposit-button" v-if="!isHidden">
         <h5 v-on:click = "clickDeposit"><strong>Submit</strong></h5>
      </div>
-    <img class="center" v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif"><br/><br/>
+    <img class="center" v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif">
     <div class="tx" v-if="depositTx" align = "left">
         <strong>Tx hash:</strong> <a :href ="'https://ropsten.etherscan.io/tx/' + depositTx" target="_blank" style="color:#4682b4">{{ depositTx }}</a>
     </div>
@@ -32,7 +29,6 @@
         <strong>Amount:</strong> {{ depositEvent.amount }} <br/>
         <strong>Token type:</strong> {{ depositEvent.token_type }}
     </div>
-
  </div>
 </template>
 
@@ -58,6 +54,11 @@
         overflow: hidden;              /* "overflow" value must be different from  visible"*/ 
         -o-text-overflow: ellipsis;    /* Opera < 11*/
         text-overflow:    ellipsis; 
+    }
+    .deposit-info:hover{
+        background-color:#FFDAB9;
+        color:#444444;
+        box-shadow:0px 0px #FFDAB9;
     }
     .deposit-button {
         padding: 10px;
@@ -95,6 +96,7 @@
         },
         data () {
             return {
+                isHidden: true,
                 pendingTx: false,
                 pendingEvent: false,
                 depositEvent: null,
@@ -137,6 +139,10 @@
                 //             .on('error', console.error)
                 //         }
                 //     })
+            },
+
+            toggleHidden (){
+                this.isHidden = !this.isHidden
             }
         }
     }

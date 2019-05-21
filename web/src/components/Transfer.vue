@@ -1,7 +1,7 @@
 <template>
- <div class='transfer-info'>
-     <h1 align="center"><strong>Transfer</strong></h1><br/>
-     <b-container fluid>
+ <div class='transfer-info' v-on:click="toggleHidden">
+     <h1 align="center"><strong>Transfer</strong></h1>
+     <b-container fluid v-if="!isHidden">
         <b-row class="my-1">
             <b-col sm="2">
             <label for="input-small">from_x:</label><br/>
@@ -23,11 +23,10 @@
             </b-col>
         </b-row>
     </b-container>
-    <br/>
-     <div class="transfer-button">
-        <h5 v-on:click = "clickTransfer"><strong>Submit</strong></h5>
+     <div class="transfer-button" v-if="!isHidden">
+        <h5 v-on:click = "clickTransfer"><strong>Sign and submit</strong></h5>
      </div>
-    <img class="center" v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif"><br/><br/>
+    <img class="center" v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif">
     <div class="tx" v-if="transferTx" align = "left">
         <strong>Tx hash:</strong> <a :href ="'https://ropsten.etherscan.io/tx/' + transferTx" target="_blank" style="color:#4682b4">{{ transferTx }}</a>
     </div>
@@ -62,6 +61,11 @@
         overflow: hidden;              /* "overflow" value must be different from  visible"*/ 
         -o-text-overflow: ellipsis;    /* Opera < 11*/
         text-overflow:    ellipsis; 
+    }
+    .transfer-info:hover{
+        background-color:#FFDAB9;
+        color:#444444;
+        box-shadow:0px 0px #FFDAB9;
     }
     .transfer-button {
         padding: 10px;
@@ -99,6 +103,7 @@
         },
         data () {
             return {
+                isHidden: true,
                 pendingTx: false,
                 pendingEvent: false,
                 transferEvent: null,
@@ -143,6 +148,10 @@
                 //             .on('error', console.error)
                 //         }
                 //     })
+            },
+
+            toggleHidden (){
+                this.isHidden = !this.isHidden
             }
         }
     }

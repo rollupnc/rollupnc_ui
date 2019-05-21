@@ -1,7 +1,7 @@
 <template>
- <div class='withdraw-info'>
-     <h1 align="center"><strong>Withdraw</strong></h1><br/>
-     <b-container fluid>
+ <div class='withdraw-info' v-on:click="toggleHidden">
+     <h1 align="center"><strong>Withdraw</strong></h1>
+     <b-container fluid v-if="!isHidden">
         <b-row class="my-1">
             <b-col sm="2">
             <label for="input-small">from_x:</label><br/>
@@ -9,7 +9,6 @@
             <label for="input-small">amount:</label><br/>
             <label for="input-small">token:</label><br/>
             <label for="input-small">txRoot:</label><br/>
-
             </b-col>
             <b-col sm="10">
             <b-form-input id="input-small" v-model="from_x" size="sm"></b-form-input>
@@ -17,18 +16,16 @@
             <b-form-input id="input-small" v-model="amount" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="token_type_from" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="txRoot" size="sm"></b-form-input>
-
             </b-col>
         </b-row>
     </b-container>
-    <br/>
-    <div class="withdraw-button">
+    <div class="withdraw-button" v-if="!isHidden">
         <h5 v-on:click = "getProof"><strong>1. Get Merkle proof</strong></h5>
      </div>
-     <div class="withdraw-button">
+     <div class="withdraw-button" v-if="!isHidden">
         <h5 v-on:click = "clickWithdraw"><strong>2. Sign and submit</strong></h5>
      </div>
-    <img class="center" v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif"><br/><br/>
+    <img class="center" v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif">
     <div class="tx" v-if="withdrawTx" align = "left">
         <strong>Tx hash:</strong> <a :href ="'https://ropsten.etherscan.io/tx/' + withdrawTx" target="_blank" style="color:#4682b4">{{ withdrawTx }}</a>
     </div>
@@ -38,7 +35,6 @@
         <strong>Amount:</strong> {{ withdrawEvent.amount }} <br/>
         <strong>Token type:</strong> {{ withdrawEvent.token_type }}
     </div>
-
  </div>
 </template>
 
@@ -64,6 +60,11 @@
         overflow: hidden;              /* "overflow" value must be different from  visible"*/ 
         -o-text-overflow: ellipsis;    /* Opera < 11*/
         text-overflow:    ellipsis; 
+    }
+    .withdraw-info:hover{
+        background-color:#FFDAB9;
+        color:#444444;
+        box-shadow:0px 0px #FFDAB9;
     }
     .withdraw-button {
         padding: 10px;
@@ -101,6 +102,7 @@
         },
         data () {
             return {
+                isHidden: true,
                 pendingTx: false,
                 pendingEvent: false,
                 withdrawEvent: null,
@@ -169,6 +171,10 @@
 
             getProof () {
 
+            },
+
+            toggleHidden (){
+                this.isHidden = !this.isHidden
             }
         }
     }
