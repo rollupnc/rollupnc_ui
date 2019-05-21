@@ -17,7 +17,7 @@
             </b-col>
         </b-row>
     </b-container>
-     <div class="deposit-button" v-if="!isHidden">
+     <div class="deposit-button" v-if="!isHidden" v-on:click="toggleHidden">
         <h5 v-on:click = "clickDeposit"><strong>Submit</strong></h5>
      </div>
     <img class="center" v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif">
@@ -41,13 +41,14 @@
     }
     .deposit-info {
         margin-top: 20px;
-        margin-left: 15%;
+        margin-left: auto;
+        margin-right: auto;
         padding: 20px;
         /* display: inline-block; */
         text-align:left;
         border: 1px solid black;
         background-color:#FFFAFA; 
-        width: 70%;
+        width: 60%;
         /* padding-left: 10%;  */
         white-space: wrap;
         /* width: 100%;                   IE6 needs any width */
