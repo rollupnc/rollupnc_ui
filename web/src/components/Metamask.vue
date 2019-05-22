@@ -32,7 +32,7 @@ export default {
 <style scoped>
 .metamask-info {
   width: 100%;
-  padding-left: 15%; 
+  padding-left: 20%; 
   /* margin-left: -300px; */
 }
 </style>

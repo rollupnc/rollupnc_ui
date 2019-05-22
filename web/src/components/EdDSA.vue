@@ -13,7 +13,7 @@
 <style scoped>
 .eddsa-info {
   width: 100%;
-  padding-left: 15%; 
+  padding-left: 20%; 
   /* margin-left: -300px; */
   white-space: wrap;
   /* width: 100%;                   IE6 needs any width */
