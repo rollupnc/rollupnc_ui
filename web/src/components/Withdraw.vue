@@ -6,15 +6,19 @@
             <b-col sm="2">
             <label for="input-small">from_x:</label><br/>
             <label for="input-small">from_y:</label><br/>
+            <label for="input-small">nonce:</label><br/>
             <label for="input-small">amount:</label><br/>
             <label for="input-small">token:</label><br/>
+            <label for="input-small">recipient:</label><br/>
             <label for="input-small">txRoot:</label><br/>
             </b-col>
             <b-col sm="10">
             <b-form-input id="input-small" v-model="from_x" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="from_y" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="nonce" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="amount" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="token_type_from" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="recipient" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="txRoot" size="sm"></b-form-input>
             </b-col>
         </b-row>
