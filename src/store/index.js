@@ -67,7 +67,7 @@ export const store = new Vuex.Store({
         },
 
         // loadProvingKey ({commit}) {
-        //     axios.get("@/util/constants/proving_key.bin")
+        //     axios.get("https://github.com/therealyingtong/rollupnc_ui/blob/master/src/assets/proving_key.bin")
         //     .then( (response) => {
         //         console.log(response)
         //         // console.log(response.arrayBuffer())

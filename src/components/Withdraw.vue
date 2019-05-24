@@ -105,7 +105,7 @@
     var websnark = require('@/util/websnark.js')
     var withdrawSNARK = require('@/util/withdrawSNARK.js')
     const circuit = require('@/util/constants/circuit.json')
-    const provingBin = require('@/util/constants/proving_key.bin')
+    const axios = require('axios')
 
     export default {
         name: 'Withdraw',
@@ -153,10 +153,16 @@
 
         methods: {
             loadProvingKey () {
-                this.provingKey = new ArrayBuffer(4428632)
+                fetch("http://raw.githubusercontent.com/therealyingtong/rollupnc_ui/master/src/assets/proving_key.bin")
+                // fetch("https://drive.google.com/file/d/1gndLLl5a-XSrxLTf07P_XCXibmahPp0p/")
+                .then( (response) => {
+                    return response.arrayBuffer();
+                }).then( (b) => {
+                    this.provingKey = b;
+                })
             },
 
-            clickWithdraw ()  {
+            async clickWithdraw ()  {
                 this.withdrawTx = null
                 this.withdrawEvent = null
                 this.pendingEvent = true
@@ -167,9 +173,9 @@
                 )
 
                 this.witness = withdrawSNARK.calculateWitness(circuit, snarkInputs)
-                this.snarkProof = withdrawSNARK.generateProof(
-                    this.witness, this.$store.state.provingKey()
-                )
+                window.genZKSnarkProof(this.witness, this.provingKey).then((p)=> {
+                    this.snarkProof = JSON.stringify(p, null, 1);
+                });
 
                 // this.$store.state.contractInstance().methods.withdraw(
                 //     [this.from_x, this.from_y], 

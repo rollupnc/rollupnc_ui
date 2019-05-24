@@ -34,15 +34,12 @@ module.exports = {
         return inputs
     },
 
-    generateProof: function(witness, provingKey){
-        console.log('witness', witness)
-        console.log('provingKey', provingKey)
-        var proof
-        window.genZKSnarkProof(witness, provingKey).then((p)=> {
-            proof = JSON.stringify(p, null, 1);
-        });
-        return proof
-    },
+    // generateProof: function(witness, provingKey){
+    //     window.genZKSnarkProof(witness, provingKey).then((p)=> {
+    //         console.log(proof)
+    //         return proof = JSON.stringify(p, null, 1);
+    //     });
+    // },
 
     calculateWitness: function(cirDef, inputs){
         circuit = new snarkjs.Circuit(cirDef);
