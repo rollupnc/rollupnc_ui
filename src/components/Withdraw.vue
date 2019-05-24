@@ -27,12 +27,27 @@
         <h5 v-on:click = "getMerkleProof"><strong>1. Get Merkle proof</strong></h5>
      </div>
      <div class="withdraw-button" v-if="!isHidden" v-on:click="toggleHidden">
-        <h5 v-on:click = "clickWithdraw"><strong>2. Sign and submit</strong></h5>
+        <h5 v-on:click = "getSnarkProof"><strong>2. EdDSA sign</strong></h5>
+     </div>
+     {{ p }}
+    <b-container fluid v-if="pendingSign" v-on:click="toggleHidden">
+        <b-row class="my-1">
+            <b-col sm="2">
+            <label for="input-small">a:</label><br/>
+            <label for="input-small">b:</label><br/>
+            <label for="input-small">c:</label><br/>
+            </b-col>
+            <b-col sm="10">
+            <b-form-input id="input-small" placeholder="calculating..." v-model="a"  size="sm"></b-form-input>
+            <b-form-input id="input-small" placeholder="calculating..." v-model="b" size="sm"></b-form-input>
+            <b-form-input id="input-small" placeholder="calculating..." v-model="c" size="sm"></b-form-input>
+            </b-col>
+        </b-row>
+    </b-container>
+    <div class="withdraw-button" v-if="!isHidden" v-on:click="toggleHidden">
+        <h5 v-on:click = "clickWithdraw"><strong>3. Submit to contract</strong></h5>
      </div>
     <img class="center" v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif">
-    <div class = "snarkProof" v-if="pendingTx">
-        SNARK proof: {{ snarkProof }}
-    </div>
     <div class="tx" v-if="withdrawTx" align = "left">
         <strong>Tx hash:</strong> <a :href ="'https://ropsten.etherscan.io/tx/' + withdrawTx" target="_blank" style="color:#4682b4">{{ withdrawTx }}</a>
     </div>
@@ -118,6 +133,7 @@
             return {
                 isHidden: true,
                 pendingTx: false,
+                pendingSign: false,
                 pendingEvent: false,
                 withdrawEvent: null,
                 withdrawTx: null,
@@ -134,27 +150,26 @@
                 txRoot: "149126198147162084281232535967801344773039936115368629187002798446712412021",
                 recipient: "0xC33Bdb8051D6d2002c0D80A1Dd23A1c9d9FC26E4",
                 a: [
-                    "0x096ed4c35159f0c371729082cc18d323135be5ae410fb4ba313595a666ed530c", 
-                    "0x2995f1640c8d4da98cde2ef61af64b2927c95c2946455247877643cca3b39db6"],
+                    "0x0e5efd8a44293b095bbdbb9a8287441d8b5b2c6dedfaa207f577172f46312410", 
+                    "0x2521380fdcd0c73c89f2a59d225f7f4466ae42d672df378db313ed4208a3d4ab"],
                 b: [
-                    ["0x1adbee8bcfa45824a5ebe904176b4f161282fbea31ff5954c7e49466f38e295f", 
-                    "0x249ba84b42ab6c8d0bf91b9d9f77069ba1c16f8d446eab203480c82819cea03d"],
-                    ["0x085780756487e6ed337d5a7cb362afaec168bd762df5ce93342894e1ca6dcdea", 
-                    "0x16deb6ed5cfe8c6457a9e5bd041fd8fc3e63efe88011a6252bea3e048f1b5737"]],
+                    ["0x073775ec222b693ef64383882a159f273e898ddd5196897a1ba490311c59436e", 
+                    "0x118fd15a8551104fd41fe2aa62f34abee48b1ceb6726be1010c01a31001ef067"],
+                    ["0x1ec9f5676da318675a843282edc160af47fcdcebb790f7522daf5898ad8de76f", 
+                    "0x1696d6058c0522472b8b78f2c9a9355173df714f7b062f1206c3f129d717dc34"]],
                 c: [
-                    "0x0486ae4189391ac3e03d03585fc4091ffea326e1f22bebac56883c586a1b6e82", 
-                    "0x034c0ae8bd353e82c697d227a8b2c7ae405a28dc9f4f3bd7a23f96947b71e400"],
+                    "0x185a6e0a2cbe5a05e41a6dfc94358f31668eea7e393693d65219072bc3a0225d", 
+                    "0x1abb9477cc7e04faeebf409331d554738161775ce07364e275830f0d517285de"],
                 provingKey: null,
                 witness: null,
-                snarkProof: null,
-                privkey: Buffer.from("2".padStart(64,'0'), "hex")
+                privkey: Buffer.from("2".padStart(64,'0'), "hex"),
+                p: null
             }
         },
 
         methods: {
             loadProvingKey () {
                 fetch("http://raw.githubusercontent.com/therealyingtong/rollupnc_ui/master/src/assets/proving_key.bin")
-                // fetch("https://drive.google.com/file/d/1gndLLl5a-XSrxLTf07P_XCXibmahPp0p/")
                 .then( (response) => {
                     return response.arrayBuffer();
                 }).then( (b) => {
@@ -162,47 +177,58 @@
                 })
             },
 
-            async clickWithdraw ()  {
+            getSnarkProof ()  {
                 this.withdrawTx = null
                 this.withdrawEvent = null
                 this.pendingEvent = true
-                this.pendingTx = true
+                this.pendingTx = false
+                this.pendingSign = true
 
                 var snarkInputs = withdrawSNARK.signWithdrawMessage(
                     this.nonce, this.recipient, [this.from_x, this.from_y], this.privkey
                 )
+                console.log(snarkInputs)
 
                 this.witness = withdrawSNARK.calculateWitness(circuit, snarkInputs)
                 window.genZKSnarkProof(this.witness, this.provingKey).then((p)=> {
-                    this.snarkProof = JSON.stringify(p, null, 1);
-                });
+                    this.p = p
+                    console.log(p)
+                    var call = withdrawSNARK.generateCall(p)
+                    console.log("call", call)
+                    this.a = call.a
+                    this.b = call.b
+                    this.c = call.c                
+                })
+            },
 
-                // this.$store.state.contractInstance().methods.withdraw(
-                //     [this.from_x, this.from_y], 
-                //     [this.nonce, this.amount, this.token_type_from], 
-                //     [this.position, this.proof], this.txRoot, this.recipient,
-                //     this.a, this.b, this.c).send(
-                //     {
-                //         // gas: 300000,
-                //         from: this.$store.state.web3.coinbase
-                //     }, 
-                //     (err, result) => {
-                //         if (err) {
-                //             console.log(err)
-                //         } else {
-                //             this.pendingTx = false
-                //             this.withdrawTx = result
-                //             this.$store.state.contractInstance().events.Withdraw( 
-                //                 {fromBlock: 0, toBlock: 'latest'}, (error, event) => {}
-                //             )
-                //             .on('data', (event) => {
-                //                 this.withdrawEvent = event['returnValues']
-                //                 console.log(this.withdrawEvent)
-                //                 this.pendingEvent = true
-                //             })
-                //             .on('error', console.error)
-                //         }
-                //     })
+            clickWithdraw () {
+                this.pendingTx = true
+                this.$store.state.contractInstance().methods.withdraw(
+                    [this.from_x, this.from_y], 
+                    [this.nonce, this.amount, this.token_type_from], 
+                    [this.position, this.proof], this.txRoot, this.recipient,
+                    this.a, this.b, this.c).send(
+                    {
+                        // gas: 300000,
+                        from: this.$store.state.web3.coinbase
+                    }, 
+                    (err, result) => {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            this.pendingTx = false
+                            this.withdrawTx = result
+                            this.$store.state.contractInstance().events.Withdraw( 
+                                {fromBlock: 0, toBlock: 'latest'}, (error, event) => {}
+                            )
+                            .on('data', (event) => {
+                                this.withdrawEvent = event['returnValues']
+                                console.log(this.withdrawEvent)
+                                this.pendingEvent = true
+                            })
+                            .on('error', console.error)
+                        }
+                    })
             },
 
             getMerkleProof () {

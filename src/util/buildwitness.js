@@ -56,12 +56,9 @@ module.exports = {
         }
 
         assert.equal(h.offset, buffLen);
+
         return this.toArrayBuffer(Buffer.from(buff))
 
-        // var wstream = fs.createWriteStream('./constants/witness.bin');
-        // wstream.write(Buffer.from(buff));
-        // wstream.end();
-    
     }
 }
 
