@@ -24,12 +24,15 @@
         </b-row>
     </b-container>
     <div class="withdraw-button" v-if="!isHidden" v-on:click="toggleHidden">
-        <h5 v-on:click = "getProof"><strong>1. Get Merkle proof</strong></h5>
+        <h5 v-on:click = "getMerkleProof"><strong>1. Get Merkle proof</strong></h5>
      </div>
      <div class="withdraw-button" v-if="!isHidden" v-on:click="toggleHidden">
         <h5 v-on:click = "clickWithdraw"><strong>2. Sign and submit</strong></h5>
      </div>
     <img class="center" v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif">
+    <div class = "snarkProof" v-if="pendingTx">
+        SNARK proof: {{ snarkProof }}
+    </div>
     <div class="tx" v-if="withdrawTx" align = "left">
         <strong>Tx hash:</strong> <a :href ="'https://ropsten.etherscan.io/tx/' + withdrawTx" target="_blank" style="color:#4682b4">{{ withdrawTx }}</a>
     </div>
@@ -40,6 +43,7 @@
         <strong>Token type:</strong> {{ withdrawEvent.token_type }}
     </div>
  </div>
+
 </template>
 
 <style scoped>
@@ -97,13 +101,18 @@
     }
 </style>
 
-
 <script>
+    var websnark = require('@/util/websnark.js')
+    var withdrawSNARK = require('@/util/withdrawSNARK.js')
+    const circuit = require('@/util/constants/circuit.json')
+    const provingBin = require('@/util/constants/proving_key.bin')
+
     export default {
         name: 'Withdraw',
         mounted () {
             // console.log('dispatching getContractInstance')
             this.$store.dispatch('getContractInstance')
+            this.loadProvingKey()
         },
         data () {
             return {
@@ -134,52 +143,71 @@
                     "0x16deb6ed5cfe8c6457a9e5bd041fd8fc3e63efe88011a6252bea3e048f1b5737"]],
                 c: [
                     "0x0486ae4189391ac3e03d03585fc4091ffea326e1f22bebac56883c586a1b6e82", 
-                    "0x034c0ae8bd353e82c697d227a8b2c7ae405a28dc9f4f3bd7a23f96947b71e400"]
+                    "0x034c0ae8bd353e82c697d227a8b2c7ae405a28dc9f4f3bd7a23f96947b71e400"],
+                provingKey: null,
+                witness: null,
+                snarkProof: null,
+                privkey: Buffer.from("2".padStart(64,'0'), "hex")
             }
         },
 
         methods: {
+            loadProvingKey () {
+                this.provingKey = new ArrayBuffer(4428632)
+            },
+
             clickWithdraw ()  {
                 this.withdrawTx = null
                 this.withdrawEvent = null
                 this.pendingEvent = true
                 this.pendingTx = true
 
-                this.$store.state.contractInstance().methods.withdraw(
-                    [this.from_x, this.from_y], 
-                    [this.nonce, this.amount, this.token_type_from], 
-                    [this.position, this.proof], this.txRoot, this.recipient,
-                    this.a, this.b, this.c).send(
-                    {
-                        // gas: 300000,
-                        from: this.$store.state.web3.coinbase
-                    }, 
-                    (err, result) => {
-                        if (err) {
-                            console.log(err)
-                        } else {
-                            this.pendingTx = false
-                            this.withdrawTx = result
-                            this.$store.state.contractInstance().events.Withdraw( 
-                                {fromBlock: 0, toBlock: 'latest'}, (error, event) => {}
-                            )
-                            .on('data', (event) => {
-                                this.withdrawEvent = event['returnValues']
-                                console.log(this.withdrawEvent)
-                                this.pendingEvent = true
-                            })
-                            .on('error', console.error)
-                        }
-                    })
+                var snarkInputs = withdrawSNARK.signWithdrawMessage(
+                    this.nonce, this.recipient, [this.from_x, this.from_y], this.privkey
+                )
+
+                this.witness = withdrawSNARK.calculateWitness(circuit, snarkInputs)
+                this.snarkProof = withdrawSNARK.generateProof(
+                    this.witness, this.$store.state.provingKey()
+                )
+
+                // this.$store.state.contractInstance().methods.withdraw(
+                //     [this.from_x, this.from_y], 
+                //     [this.nonce, this.amount, this.token_type_from], 
+                //     [this.position, this.proof], this.txRoot, this.recipient,
+                //     this.a, this.b, this.c).send(
+                //     {
+                //         // gas: 300000,
+                //         from: this.$store.state.web3.coinbase
+                //     }, 
+                //     (err, result) => {
+                //         if (err) {
+                //             console.log(err)
+                //         } else {
+                //             this.pendingTx = false
+                //             this.withdrawTx = result
+                //             this.$store.state.contractInstance().events.Withdraw( 
+                //                 {fromBlock: 0, toBlock: 'latest'}, (error, event) => {}
+                //             )
+                //             .on('data', (event) => {
+                //                 this.withdrawEvent = event['returnValues']
+                //                 console.log(this.withdrawEvent)
+                //                 this.pendingEvent = true
+                //             })
+                //             .on('error', console.error)
+                //         }
+                //     })
             },
 
-            getProof () {
+            getMerkleProof () {
 
             },
 
             toggleHidden (){
                 this.isHidden = !this.isHidden
-            }
+            },
+
+            
         }
     }
 

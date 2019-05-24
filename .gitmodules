@@ -1,6 +1,3 @@
-[submodule "web/src/circomlib"]
-	path = web/src/circomlib
-	url = https://github.com/iden3/circomlib.git
-[submodule "circomlib"]
-	path = circomlib
+[submodule "src/circomlib"]
+	path = src/circomlib
 	url = https://github.com/iden3/circomlib

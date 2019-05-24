@@ -1,5 +1,6 @@
 const bigInt = require("big-integer");
 const assert = require("assert");
+const fs = require("fs");
 
 module.exports = {
 
@@ -27,6 +28,15 @@ module.exports = {
     
         return size;
     },
+
+    toArrayBuffer: function(buf) {
+        var ab = new ArrayBuffer(buf.length);
+        var view = new Uint8Array(ab);
+        for (var i = 0; i < buf.length; ++i) {
+            view[i] = buf[i];
+        }
+        return ab;
+    },
     
     buildWitness: function(witness){
         const buffLen = this.calculateBuffLen(witness);
@@ -46,10 +56,11 @@ module.exports = {
         }
 
         assert.equal(h.offset, buffLen);
+        return this.toArrayBuffer(Buffer.from(buff))
 
-        var wstream = fs.createWriteStream('witness.bin');
-        wstream.write(Buffer.from(buff));
-        wstream.end();
+        // var wstream = fs.createWriteStream('./constants/witness.bin');
+        // wstream.write(Buffer.from(buff));
+        // wstream.end();
     
     }
 }

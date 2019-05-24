@@ -4,7 +4,6 @@ import state from './state'
 import getWeb3 from '../util/getWeb3'
 import pollWeb3 from '../util/pollWeb3'
 import getContract from '../util/getContract'
-import {address, ABI} from '../util/constants/rollupNCContract'
 
 Vue.use(Vuex)
 
@@ -37,7 +36,11 @@ export const store = new Vuex.Store({
             // console.log('RollupNC contract instance: ', payload)
             state.contractInstance = () => payload
             // state.contractInstance = payload
-        }
+        },
+
+        // registerProvingKey(state, payload){
+        //     state.provingKey = () => payload
+        // }
            
     },
     actions: {
@@ -61,6 +64,18 @@ export const store = new Vuex.Store({
             getContract.then(result => {
                 commit('registerContractInstance', result)
             }).catch(e => console.log(e))
-        }
+        },
+
+        // loadProvingKey ({commit}) {
+        //     axios.get("@/util/constants/proving_key.bin")
+        //     .then( (response) => {
+        //         console.log(response)
+        //         // console.log(response.arrayBuffer())
+        //         return response.arrayBuffer();
+        //     }).then( (b) => {
+        //         commit('registerProvingKey', b)
+        //         // this.provingKey = b;
+        //     })
+        // }
     }
 })
