@@ -39,7 +39,7 @@ module.exports = {
     },
     
     buildWitness: function(witness){
-        const buffLen = this.calculateBuffLen(witness);
+        const buffLen = module.exports.calculateBuffLen(witness);
     
         const buff = new ArrayBuffer(buffLen);
     
@@ -52,12 +52,12 @@ module.exports = {
         // writeUint32(h, witness.length);
     
         for (let i=0; i<witness.length; i++) {
-            this.writeBigInt(h, witness[i]);
+            module.exports.writeBigInt(h, witness[i]);
         }
 
         assert.equal(h.offset, buffLen);
 
-        return this.toArrayBuffer(Buffer.from(buff))
+        return module.exports.toArrayBuffer(Buffer.from(buff))
 
     }
 }

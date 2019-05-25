@@ -128,6 +128,7 @@
             // console.log('dispatching getContractInstance')
             this.$store.dispatch('getContractInstance')
             this.loadProvingKey()
+            // this.loadWitness()
         },
         data () {
             return {
@@ -149,20 +150,24 @@
                 position: [1, 0],
                 txRoot: "149126198147162084281232535967801344773039936115368629187002798446712412021",
                 recipient: "0xC33Bdb8051D6d2002c0D80A1Dd23A1c9d9FC26E4",
-                a: [
-                    "0x0e5efd8a44293b095bbdbb9a8287441d8b5b2c6dedfaa207f577172f46312410", 
-                    "0x2521380fdcd0c73c89f2a59d225f7f4466ae42d672df378db313ed4208a3d4ab"],
-                b: [
-                    ["0x073775ec222b693ef64383882a159f273e898ddd5196897a1ba490311c59436e", 
-                    "0x118fd15a8551104fd41fe2aa62f34abee48b1ceb6726be1010c01a31001ef067"],
-                    ["0x1ec9f5676da318675a843282edc160af47fcdcebb790f7522daf5898ad8de76f", 
-                    "0x1696d6058c0522472b8b78f2c9a9355173df714f7b062f1206c3f129d717dc34"]],
-                c: [
-                    "0x185a6e0a2cbe5a05e41a6dfc94358f31668eea7e393693d65219072bc3a0225d", 
-                    "0x1abb9477cc7e04faeebf409331d554738161775ce07364e275830f0d517285de"],
+                a: null,
+                b: null,
+                c: null,
+                // a: [
+                //     "0x0e5efd8a44293b095bbdbb9a8287441d8b5b2c6dedfaa207f577172f46312410", 
+                //     "0x2521380fdcd0c73c89f2a59d225f7f4466ae42d672df378db313ed4208a3d4ab"],
+                // b: [
+                //     ["0x073775ec222b693ef64383882a159f273e898ddd5196897a1ba490311c59436e", 
+                //     "0x118fd15a8551104fd41fe2aa62f34abee48b1ceb6726be1010c01a31001ef067"],
+                //     ["0x1ec9f5676da318675a843282edc160af47fcdcebb790f7522daf5898ad8de76f", 
+                //     "0x1696d6058c0522472b8b78f2c9a9355173df714f7b062f1206c3f129d717dc34"]],
+                // c: [
+                //     "0x185a6e0a2cbe5a05e41a6dfc94358f31668eea7e393693d65219072bc3a0225d", 
+                //     "0x1abb9477cc7e04faeebf409331d554738161775ce07364e275830f0d517285de"],
                 provingKey: null,
                 witness: null,
                 privkey: Buffer.from("2".padStart(64,'0'), "hex"),
+                // privkey: localStorage.getItem('privkey'),
                 p: null
             }
         },
@@ -177,6 +182,16 @@
                 })
             },
 
+            // loadWitness () {
+            //     console.log('loading witness.bin from github')
+            //     fetch("http://raw.githubusercontent.com/therealyingtong/rollupnc_ui/master/src/assets/witness.bin")
+            //     .then( (response) => {
+            //         return response.arrayBuffer();
+            //     }).then( (b) => {
+            //         this.witness = b;
+            //     })
+            // },
+
             getSnarkProof ()  {
                 this.withdrawTx = null
                 this.withdrawEvent = null
@@ -187,8 +202,6 @@
                 var snarkInputs = withdrawSNARK.signWithdrawMessage(
                     this.nonce, this.recipient, [this.from_x, this.from_y], this.privkey
                 )
-                console.log(snarkInputs)
-
                 this.witness = withdrawSNARK.calculateWitness(circuit, snarkInputs)
                 window.genZKSnarkProof(this.witness, this.provingKey).then((p)=> {
                     this.p = p
