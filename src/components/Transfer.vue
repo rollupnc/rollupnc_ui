@@ -23,17 +23,27 @@
             </b-col>
         </b-row>
     </b-container>
+    <div class="transfer-button" v-if="!isHidden" v-on:click="toggleHidden">
+        <h5 v-on:click = "signTransfer"><strong>1. Sign transaction</strong></h5>
+     </div>
+     <b-container fluid v-if="pendingSign">
+        <b-row class="my-1">
+            <b-col sm="2">
+            <label for="input-small">R8:</label><br/>
+            <label for="input-small">S:</label><br/>
+            </b-col>
+            <b-col sm="10">
+            <b-form-input id="input-small" v-model="signature.R8" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="signature.S" size="sm"></b-form-input>
+            </b-col>
+        </b-row>
+    </b-container>
      <div class="transfer-button" v-if="!isHidden" v-on:click="toggleHidden">
-        <h5 v-on:click = "clickTransfer"><strong>Sign and submit</strong></h5>
+        <h5 v-on:click = "clickTransfer"><strong>2. Submit to RollupNC</strong></h5>
      </div>
     <img class="center" v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif">
-    <div class="tx" v-if="transferTx" align = "left">
-        <strong>Tx hash:</strong> <a :href ="'https://ropsten.etherscan.io/tx/' + transferTx" target="_blank" style="color:#4682b4">{{ transferTx }}</a>
-    </div>
     <div v-if="transferEvent" align="left">
-        <strong>From (EdDSA):</strong> {{ transferEvent.from[0] }}, {{ transferEvent.from[1] }} <br/>
-        <strong>Amount:</strong> {{ transferEvent.amount }} <br/>
-        <strong>Token type:</strong> {{ transferEvent.token_type }}
+        {{ transferEvent }}
     </div>
 
  </div>
@@ -96,59 +106,67 @@
 
 
 <script>
+    var transferHelper = require('@/util/helpers/transferHelper.js')
+
     export default {
         name: 'Transfer',
         mounted () {
             // console.log('dispatching getContractInstance')
-            this.$store.dispatch('getContractInstance')
+            // this.$store.dispatch('getContractInstance')
         },
         data () {
             return {
                 isHidden: true,
                 pendingTx: false,
-                pendingEvent: false,
+                pendingSign: false,
+                sentTx: false,
                 transferEvent: null,
-                transferTx: null,
                 from_x: "5188413625993601883297433934250988745151922355819390722918528461123462745458",
                 from_y: "12688531930957923993246507021135702202363596171614725698211865710242486568828",
                 to_x: "5188413625993601883297433934250988745151922355819390722918528461123462745458",
                 to_y: "12688531930957923993246507021135702202363596171614725698211865710242486568828",
                 amount: 500,
-                token_type_from: 10
+                token_type_from: 10,
+                signature: null,
+                privkey: Buffer.from("2".padStart(64,'0'), "hex"),
             }
         },
 
         methods: {
+            signTransfer () {
+                this.pendingSign = true
+                this.signature = transferHelper.signTransfer(
+                    this.from_x, 
+                    this.from_y, 
+                    this.to_x, 
+                    this.to_y, 
+                    this.amount, 
+                    this.token_type_from, 
+                    this.privkey
+                )
+            },
+
             clickTransfer ()  {
-                this.transferTx = null
                 this.transferEvent = null
-                this.pendingEvent = true
                 this.pendingTx = true
 
-                // this.$store.state.contractInstance().methods.deposit(
-                //     [this.from_x, this.from_y], this.amount, this.token_type_from)
-                //     .send(
-                //     {
-                //         // gas: 300000,
-                //         from: this.$store.state.web3.coinbase
-                //     }, 
-                //     (err, result) => {
-                //         if (err) {
-                //             console.log(err)
-                //         } else {
-                //             this.pendingTx = false
-                //             this.depositTx = result
-                //             this.$store.state.contractInstance().events.Deposit( 
-                //                 {fromBlock: 0, toBlock: 'latest'}, (error, event) => {}
-                //             )
-                //             .on('data', (event) => {
-                //                 this.depositEvent = event['returnValues']
-                //                 console.log(this.depositEvent)
-                //                 this.pendingEvent = true
-                //             })
-                //             .on('error', console.error)
-                //         }
-                //     })
+                transferHelper.sendTransfer(
+                    this.from_x, 
+                    this.from_y, 
+                    this.to_x, 
+                    this.to_y, 
+                    this.amount, 
+                    this.token_type_from, 
+                    this.signature
+                )        
+                .then(result => {
+                    this.transferEvent = 'SUCCESS'
+                    this.pendingTx = false
+                    this.sentTx = true
+                }, error => {
+                    this.transferEvent = error
+                    this.pendingTx = false
+                })
             },
 
             toggleHidden (){

@@ -24,7 +24,7 @@
 </style>
 
 <script>
-    var getAccount = require('@/util/getAccount.js')
+    var getAccount = require('@/util/getters/getAccount.js')
     export default{
         name: 'EdDSA',
         data () {

@@ -15,8 +15,8 @@ const snarkjs = require("snarkjs");
 const eddsa = require("@/circomlib/src/eddsa.js");
 const mimcjs = require("@/circomlib/src/mimc7.js");
 const bigInt = snarkjs.bigInt;
-const buildWitness = require("./buildwitness")
-const {unstringifyBigInts} = require("@/util/stringifybigint.js");
+const buildWitness = require("../libraries/buildwitness")
+const {unstringifyBigInts} = require("../libraries/stringifybigint.js");
 
 module.exports = {
 

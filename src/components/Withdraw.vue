@@ -117,8 +117,8 @@
 </style>
 
 <script>
-    var websnark = require('@/util/websnark.js')
-    var withdrawSNARK = require('@/util/withdrawSNARK.js')
+    var websnark = require('@/util/libraries/websnark.js')
+    var withdrawHelper = require('@/util/helpers/withdrawHelper.js')
     const circuit = require('@/util/constants/circuit.json')
     const axios = require('axios')
 
@@ -199,14 +199,14 @@
                 this.pendingTx = false
                 this.pendingSign = true
 
-                var snarkInputs = withdrawSNARK.signWithdrawMessage(
+                var snarkInputs = withdrawHelper.signWithdrawMessage(
                     this.nonce, this.recipient, [this.from_x, this.from_y], this.privkey
                 )
-                this.witness = withdrawSNARK.calculateWitness(circuit, snarkInputs)
+                this.witness = withdrawHelper.calculateWitness(circuit, snarkInputs)
                 window.genZKSnarkProof(this.witness, this.provingKey).then((p)=> {
                     this.p = p
                     console.log(p)
-                    var call = withdrawSNARK.generateCall(p)
+                    var call = withdrawHelper.generateCall(p)
                     console.log("call", call)
                     this.a = call.a
                     this.b = call.b
