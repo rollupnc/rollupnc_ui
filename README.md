@@ -4,6 +4,8 @@
 
 use node 10.16.0
 
+only works in Chromium
+
 ## Build Setup
 
 ``` bash
