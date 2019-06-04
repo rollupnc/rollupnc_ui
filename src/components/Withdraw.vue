@@ -199,6 +199,8 @@
                 this.pendingTx = false
                 this.pendingSign = true
 
+                console.log('inputs to withdrawHelper',
+                this.nonce, this.recipient, [this.from_x, this.from_y], this.privkey)
                 var snarkInputs = withdrawHelper.signWithdrawMessage(
                     this.nonce, this.recipient, [this.from_x, this.from_y], this.privkey
                 )

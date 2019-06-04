@@ -42,6 +42,7 @@
         methods: {
           newWallet() {
             this.privkey = getAccount.generatePrvKey()
+            console.log(this.privkey)
             this.pubkey = getAccount.generatePubKey(this.privkey).toString()
             localStorage.setItem('privkey', this.privkey)
             localStorage.setItem('pubkey', this.pubkey.toString())

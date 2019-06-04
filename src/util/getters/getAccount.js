@@ -1,4 +1,5 @@
-const eddsa = require("@/circomlib/src/eddsa.js");
+// const eddsa = require("@/circomlib/src/eddsa.js");
+const eddsa = require("../../circomlib/src/eddsa.js");
 // const snarkjs = require("snarkjs");
 
 module.exports = {

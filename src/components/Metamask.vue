@@ -3,6 +3,7 @@
     <p>
       <strong>Metamask:</strong>
       {{ web3.isInjected }}
+      <div v-if="!web3.isInjected"> (please turn off privacy mode)</div>
     </p>
     <p>
       <strong>Network:</strong>

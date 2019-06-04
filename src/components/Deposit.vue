@@ -18,7 +18,7 @@
         </b-row>
     </b-container>
      <div class="deposit-button" v-if="!isHidden" v-on:click="toggleHidden">
-        <h5 v-on:click = "clickDeposit"><strong>Submit</strong></h5>
+        <h5 v-on:click = "clickDeposit()"><strong>Submit</strong></h5>
      </div>
     <img class="center" v-if="pendingTx" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif">
     <div class="tx" v-if="depositTx" align = "left">
@@ -105,7 +105,7 @@
                 from_x: "5188413625993601883297433934250988745151922355819390722918528461123462745458",
                 from_y: "12688531930957923993246507021135702202363596171614725698211865710242486568828",
                 amount: 500,
-                token_type_from: 10
+                token_type_from: 1
             }
         },
 
@@ -116,30 +116,31 @@
                 this.pendingEvent = true
                 this.pendingTx = true
 
-                // this.$store.state.contractInstance().methods.deposit(
-                //     [this.from_x, this.from_y], this.amount, this.token_type_from)
-                //     .send(
-                //     {
-                //         // gas: 300000,
-                //         from: this.$store.state.web3.coinbase
-                //     }, 
-                //     (err, result) => {
-                //         if (err) {
-                //             console.log(err)
-                //         } else {
-                //             this.pendingTx = false
-                //             this.depositTx = result
-                //             this.$store.state.contractInstance().events.Deposit( 
-                //                 {fromBlock: 0, toBlock: 'latest'}, (error, event) => {}
-                //             )
-                //             .on('data', (event) => {
-                //                 this.depositEvent = event['returnValues']
-                //                 console.log(this.depositEvent)
-                //                 this.pendingEvent = true
-                //             })
-                //             .on('error', console.error)
-                //         }
-                //     })
+                this.$store.state.contractInstance().methods.deposit(
+                    [this.from_x, this.from_y],
+                    this.amount, this.token_type_from).send(
+                    {
+                        // gas: 300000,
+                        from: this.$store.state.web3.coinbase,
+                        value: this.amount
+                    }, 
+                    (err, result) => {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            this.pendingTx = false
+                            this.depositTx = result
+                            this.$store.state.contractInstance().events.Withdraw( 
+                                {fromBlock: 0, toBlock: 'latest'}, (error, event) => {}
+                            )
+                            .on('data', (event) => {
+                                this.depositEvent = event['returnValues']
+                                console.log(this.depositEvent)
+                                this.pendingEvent = true
+                            })
+                            .on('error', console.error)
+                        }
+                    })
             },
 
             toggleHidden (){
