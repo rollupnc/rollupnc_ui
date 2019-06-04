@@ -2,6 +2,12 @@
 
 > A Vue.js project
 
+use node 10.16.0
+
+only works in Chromium (until bigint ships in Firefox http://wingolog.org/archives/2019/05/23/bigint-shipping-in-firefox)
+
+remember to turn off privacy mode in Metamask!
+
 ## Build Setup
 
 ``` bash
