@@ -174,7 +174,7 @@
 
         methods: {
             loadProvingKey () {
-                fetch("http://raw.githubusercontent.com/therealyingtong/rollupnc_ui/master/src/assets/proving_key.bin")
+                fetch("http://raw.githubusercontent.com/therealyingtong/rollupnc_ui/master/assets/proving_key.bin")
                 .then( (response) => {
                     return response.arrayBuffer();
                 }).then( (b) => {
