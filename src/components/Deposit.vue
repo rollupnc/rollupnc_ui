@@ -1,7 +1,7 @@
 <template>
  <div class='deposit-info' v-on:click="toggleHidden">
      <h1 align="center"><strong>Deposit</strong></h1>
-     <b-container fluid v-if="!isHidden">
+     <b-container fluid v-if="!isHidden" v-on:click="toggleHidden">
         <b-row class="my-1">
             <b-col sm="2">
             <label for="input-small">from_x:</label><br/>

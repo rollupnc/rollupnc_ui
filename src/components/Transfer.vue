@@ -1,7 +1,7 @@
 <template>
  <div class='transfer-info' v-on:click="toggleHidden">
      <h1 align="center"><strong>Transfer</strong></h1>
-     <b-container fluid v-if="!isHidden">
+     <b-container fluid v-if="!isHidden" v-on:click="toggleHidden">
         <b-row class="my-1">
             <b-col sm="2">
             <label for="input-small">from_x:</label><br/>
@@ -28,7 +28,7 @@
     <div class="transfer-button" v-if="!isHidden" v-on:click="toggleHidden">
         <h5 v-on:click = "signTransfer"><strong>Make atomic swap?</strong></h5>
      </div>
-     <b-container fluid v-if="pendingSign">
+     <b-container fluid v-if="!isHidden" v-on:click="toggleHidden">
         <b-row class="my-1">
             <b-col sm="2">
             <label for="input-small">atom_from_x:</label><br/>
@@ -53,7 +53,7 @@
     <div class="transfer-button" v-if="!isHidden" v-on:click="toggleHidden">
         <h5 v-on:click = "signTransfer"><strong>1. Sign transaction</strong></h5>
      </div>
-     <b-container fluid v-if="pendingSign">
+     <b-container fluid v-if="!isHidden" v-on:click="toggleHidden">
         <b-row class="my-1">
             <b-col sm="2">
             <label for="input-small">R8:</label><br/>
