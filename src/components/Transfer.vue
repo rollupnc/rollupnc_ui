@@ -8,6 +8,7 @@
             <label for="input-small">from_y:</label><br/>
             <label for="input-small">to_x:</label><br/>
             <label for="input-small">to_y:</label><br/>
+            <label for="input-small">nonce:</label><br/>
             <label for="input-small">amount:</label><br/>
             <label for="input-small">token:</label><br/>
 
@@ -17,8 +18,34 @@
             <b-form-input id="input-small" v-model="from_y" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="to_x" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="to_y" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="nonce" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="amount" size="sm"></b-form-input>
             <b-form-input id="input-small" v-model="token_type_from" size="sm"></b-form-input>
+
+            </b-col>
+        </b-row>
+    </b-container>
+    <div class="transfer-button" v-if="!isHidden" v-on:click="toggleHidden">
+        <h5 v-on:click = "signTransfer"><strong>Make atomic swap?</strong></h5>
+     </div>
+     <b-container fluid v-if="pendingSign">
+        <b-row class="my-1">
+            <b-col sm="2">
+            <label for="input-small">atom_from_x:</label><br/>
+            <label for="input-small">atom_from_y:</label><br/>
+            <label for="input-small">atom_to_x:</label><br/>
+            <label for="input-small">atom_to_y:</label><br/>
+            <label for="input-small">atom_amount:</label><br/>
+            <label for="input-small">atom_token:</label><br/>
+
+            </b-col>
+            <b-col sm="10">
+            <b-form-input id="input-small" v-model="atom_from_x" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="atom_from_y" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="atom_to_x" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="atom_to_y" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="atom_amount" size="sm"></b-form-input>
+            <b-form-input id="input-small" v-model="atom_token_type_from" size="sm"></b-form-input>
 
             </b-col>
         </b-row>
@@ -125,6 +152,7 @@
                 from_y: "12688531930957923993246507021135702202363596171614725698211865710242486568828",
                 to_x: "5188413625993601883297433934250988745151922355819390722918528461123462745458",
                 to_y: "12688531930957923993246507021135702202363596171614725698211865710242486568828",
+                nonce: 0,
                 amount: 500,
                 token_type_from: 10,
                 signature: null,
